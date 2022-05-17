@@ -6,7 +6,6 @@
 .feed__inputContainer {
     background-color: white;
     padding: 10px;
-    padding-bottom: 20px;
     border-radius: 10px;
     margin-bottom: 20px;
 }
@@ -35,4 +34,9 @@
 
 .feed__input > form > button {
     display: none;
+}
+
+.feed__inputOptions {
+    display: flex;
+    justify-content: space-evenly;
 }
