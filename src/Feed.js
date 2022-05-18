@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Feed.css';
 import CreateIcon from '@mui/icons-material/Create';
 import ImageIcon from '@mui/icons-material/Image';
@@ -7,8 +7,23 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import CalendarViewDayIcon from '@mui/icons-material/CalendarViewDay';
 import InputOption from './InputOption';
 import Post from './Post';
+import { db } from './firebase';
 
 const Feed = () => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    db.collection('posts').onSnapshot(snapshot => (
+      setPosts(snapshot.docs.map(doc => (
+        
+      )))
+    ))
+  }, [])
+
+  const sendPost = e => {
+    e.preventDefault();
+  };
+
   return (
     <div className='feed'>
         <div className='feed__inputContainer'>
@@ -16,7 +31,7 @@ const Feed = () => {
                 <CreateIcon />
                 <form>
                     <input type='text' />
-                    <button type='submit'>Publicar</button>
+                    <button onClick={sendPost} type='submit'>Publicar</button>
                 </form>
             </div>
             <div className='feed__inputOptions'>
@@ -26,6 +41,9 @@ const Feed = () => {
               <InputOption Icon={CalendarViewDayIcon} title='Escribir Artículo' color='#F48498' />
             </div>
         </div>
+        {posts.map((post) => (
+          <Post />
+        ))}
         <Post name='Sebastián Villalobos' description='Prueba' message='Funciona' />
     </div>
   );
