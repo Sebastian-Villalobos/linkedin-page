@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Feed.css';
 import CreateIcon from '@mui/icons-material/Create';
 import ImageIcon from '@mui/icons-material/Image';
@@ -7,21 +7,33 @@ import EventNoteIcon from '@mui/icons-material/EventNote';
 import CalendarViewDayIcon from '@mui/icons-material/CalendarViewDay';
 import InputOption from './InputOption';
 import Post from './Post';
+import firebase from 'firebase/compat/app';
 import { db } from './firebase';
 
 const Feed = () => {
+  const [input, setInput] = useState('');
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    db.collection('posts').onSnapshot(snapshot => (
-      setPosts(snapshot.docs.map(doc => (
-        
-      )))
-    ))
-  }, [])
+    db.collection('posts').onSnapshot((snapshot) => 
+      setPosts(snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }))
+      )
+    );
+  }, []);
 
-  const sendPost = e => {
+  const sendPost = (e) => {
     e.preventDefault();
+
+    db.collection('posts').add({
+      name: 'Sebastián Villalobos',
+      description: 'Esta es una prueba',
+      message: input,
+      photoUrl: '',
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
   };
 
   return (
@@ -30,7 +42,7 @@ const Feed = () => {
             <div className='feed__input'>
                 <CreateIcon />
                 <form>
-                    <input type='text' />
+                    <input value={input} onChange={(e) => setInput(e.target.value)} type='text' />
                     <button onClick={sendPost} type='submit'>Publicar</button>
                 </form>
             </div>
@@ -41,12 +53,18 @@ const Feed = () => {
               <InputOption Icon={CalendarViewDayIcon} title='Escribir Artículo' color='#F48498' />
             </div>
         </div>
-        {posts.map((post) => (
-          <Post />
+        
+        {posts.map(({ id, data: { name, description, message, photoUrl } }) => (
+          <Post 
+            key={id}
+            name={name}
+            description={description}
+            message={message}
+            photoUrl={photoUrl}
+          />
         ))}
-        <Post name='Sebastián Villalobos' description='Prueba' message='Funciona' />
     </div>
   );
 }
 
-export default Feed
+export default Feed;
